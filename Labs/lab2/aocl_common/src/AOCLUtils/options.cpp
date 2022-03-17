@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2019 Altera Corporation, San Jose, California, USA. All rights reserved.
+// Copyright (C) 2013-2016 Altera Corporation, San Jose, California, USA. All rights reserved.
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -46,6 +46,8 @@ const std::string &Options::get(const std::string &name) const {
   OptionMap::const_iterator it = m_options.find(name);
   if(it == m_options.end()) {
     errorNonExistent(name);
+    std::cerr << "Option '" << name << "' does not exist.\n";
+    exit(1);
   }
   return it->second;
 }

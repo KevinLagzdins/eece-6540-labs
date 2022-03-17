@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2019 Altera Corporation, San Jose, California, USA. All rights reserved.
+// Copyright (C) 2013-2016 Altera Corporation, San Jose, California, USA. All rights reserved.
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -43,8 +43,8 @@ void alignedFree(void *ptr);
 // Error functions
 void printError(cl_int error);
 void _checkError(int line,
-                 const char *file,
-                 cl_int error,
+								 const char *file,
+								 cl_int error,
                  const char *msg,
                  ...); // does not return
 #define checkError(status, ...) _checkError(__LINE__, __FILE__, status, __VA_ARGS__)

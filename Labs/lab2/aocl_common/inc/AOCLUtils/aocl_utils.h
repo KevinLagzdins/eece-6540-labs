@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2019 Altera Corporation, San Jose, California, USA. All rights reserved.
+// Copyright (C) 2013-2016 Altera Corporation, San Jose, California, USA. All rights reserved.
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -19,28 +19,14 @@
 // This agreement shall be governed in all respects by the laws of the State of California and
 // by the laws of the United States of America.
 
-/* widthA=heightB for valid matrix multiplication */
-__kernel void simpleMultiply(
-    __global float *outputC,
-    int widthA,
-    int heightA,
-    int widthB,
-    int heightB,
-    __global float *inputA,
-    __global float *inputB)
-{
-    /* get global position in Y direction */
-    int row = get_global_id (1);
-    /* get global position in X direction */
-    int col = get_global_id (0);
+// Main include file for AOCLUtils. Includes all other utility header files.
 
-    float sum = 0.0f;
+#ifndef AOCL_UTILS_H
+#define AOCL_UTILS_H
 
-    /* calculate result of one element of Matrix C */
-    for (int i=0; i<widthA; i++) {
-        sum += inputA[row*widthA + i] * inputB[i*widthB + col];
-    }
+#include "AOCLUtils/opencl.h"
+#include "AOCLUtils/scoped_ptrs.h"
+#include "AOCLUtils/options.h"
 
-    outputC[row*widthB + col] = sum;
-}
+#endif
 

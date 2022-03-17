@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2019 Altera Corporation, San Jose, California, USA. All rights reserved.
+// Copyright (C) 2013-2016 Altera Corporation, San Jose, California, USA. All rights reserved.
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -32,7 +32,7 @@
 
 namespace aocl_utils {
 
-static const char *const VERSION_STR = "191";
+static const char *const VERSION_STR = "161";
 
 //////////////////////////////////////////
 // Host allocation functions for alignment
@@ -269,7 +269,7 @@ bool setCwdToExeDir() {
   // Find the last '\' or '/' and terminate the path there; it is now
   // the directory containing the executable.
   size_t i;
-  for(i = strnlen(path, sizeof(path)) - 1; i > 0 && path[i] != '/' && path[i] != '\\'; --i);
+  for(i = strlen(path) - 1; i > 0 && path[i] != '/' && path[i] != '\\'; --i);
   path[i] = '\0';
 
   // Change the current directory.
@@ -359,21 +359,6 @@ cl_device_id *getDevices(cl_platform_id pid, cl_device_type dev_type, cl_uint *n
   status = clGetDeviceIDs(pid, dev_type, *num_devices, dids, NULL);
   checkError(status, "Query for device ids");
 
-  // For Windows, clGetDeviceIDs() always gives num_devices = 128, so we have to find the actual number of available devices
-  // See Release Notes here: https://www.intel.com/content/www/us/en/programmable/documentation/ewa1412772636144.html#ewa1412773000284
-#ifdef _WIN32
-  unsigned num_available = 0;
-  cl_bool is_available;
-  for (unsigned i = 0; i < *num_devices; i++) {
-    status = clGetDeviceInfo(dids[i], CL_DEVICE_AVAILABLE, sizeof(is_available), &is_available, NULL);
-    checkError(status, "Failed to get device availability");
-    if (is_available != CL_TRUE)
-      break;
-    num_available++;
-  }
-  *num_devices = num_available;
-#endif
-
   return dids;
 }
 
@@ -416,8 +401,6 @@ cl_program createProgramFromBinary(cl_context context, const char *binary_file_n
 unsigned char *loadBinaryFile(const char *file_name, size_t *size) {
   // Open the File
   FILE* fp;
-  long ftell_size;
-  size_t elements_read;
 #ifdef _WIN32
   if(fopen_s(&fp, file_name, "rb") != 0) {
     return NULL;
@@ -431,12 +414,7 @@ unsigned char *loadBinaryFile(const char *file_name, size_t *size) {
 
   // Get the size of the file
   fseek(fp, 0, SEEK_END);
-  ftell_size = ftell(fp);
-  if (ftell_size < 0) {
-    fclose(fp);
-    return NULL;
-  }
-  *size = (unsigned)ftell_size;
+  *size = ftell(fp);
 
   // Allocate space for the binary
   unsigned char *binary = new unsigned char[*size];
@@ -445,14 +423,12 @@ unsigned char *loadBinaryFile(const char *file_name, size_t *size) {
   rewind(fp);
 
   // Read the file into the binary
-  elements_read = fread((void*)binary, *size, 1, fp);
-  if(elements_read == 0) {
+  if(fread((void*)binary, *size, 1, fp) == 0) {
     delete[] binary;
     fclose(fp);
     return NULL;
   }
 
-  fclose(fp);
   return binary;
 }
 
