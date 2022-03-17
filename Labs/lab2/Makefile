@@ -91,7 +91,7 @@ LIBS := rt pthread
 
 KERNEL := mykernel
 AOCX := $(KERNEL).aocx
-CMDMSG := "To run the emulated device: \n   cd bin \n   CL_CONTEXT_EMULATOR_DEVICE_INTELFPGA=1 ./main"
+CMDMSG := "To run the emulated device: \n   CL_CONTEXT_EMULATOR_DEVICE_INTELFPGA=1 bin/main"
 
 # Make it all!
 all : $(TARGET_DIR)/$(TARGET)
