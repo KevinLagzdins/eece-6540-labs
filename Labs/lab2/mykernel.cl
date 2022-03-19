@@ -4,7 +4,7 @@ __kernel void calculate_pi(
    __global float *global_result){
    
    /* work item index */
-   int work_item_index = get_local_id(0);   
+   int work_item_index = get_group_id(0);   
 
    /* initialize local data */
    local_result[work_item_index] = 0;
@@ -24,7 +24,7 @@ __kernel void calculate_pi(
    /* Make sure previous processing has completed */
    barrier(CLK_LOCAL_MEM_FENCE);
    
-   printf("Work item %d value: %f", work_item_index, local_result[work_item_index]);
+   printf("Work item %d value: %f \n", work_item_index, local_result[work_item_index]);
    global_result[work_item_index] = local_result[work_item_index];
 
    return;
