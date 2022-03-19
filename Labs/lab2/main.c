@@ -17,7 +17,9 @@ void cleanup();
 #endif
 
 // Global Definitions
-
+#define LOCAL_SIZE 1
+#define WG_SIZE 16
+#define NUMBER_TERMS 8
 
 int main()
 {
@@ -85,10 +87,10 @@ int main()
               sizeof(local_size), &local_size, NULL);
 #endif
 #ifdef AOCL  /* local size reported Altera FPGA is incorrect */
-    local_size = 8;
+    local_size = LOCAL_SIZE;
 #endif
     printf("local_size=%lu\n", local_size);
-    global_size = local_size;
+    global_size = WG_SIZE;
     printf("global_size=%lu, local_size=%lu\n", global_size, local_size);
 
     /* Create OpenCL context */
@@ -154,7 +156,7 @@ int main()
 
     ret = 0;
     /* Create kernel argument */
-    int n_terms = 4;
+    int n_terms = NUMBER_TERMS;
     ret = clSetKernelArg(kernel, 0, sizeof(int), &n_terms);
     ret |= clSetKernelArg(kernel, 1, local_size * sizeof(float), NULL);
     ret |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &global_buffer);
@@ -182,7 +184,7 @@ int main()
 
     /* perform global reduction */
     float pi = 0;
-    for(int i = 0; i < local_size; i++)
+    for(int i = 0; i < WG_SIZE; i++)
     {
       pi += global_results[i];
     }
@@ -190,7 +192,8 @@ int main()
 
     /* Debug Information */
     printf("Performing pi calculation: \n");
-    printf("\t Work Items: %d \n", local_size);
+    printf("\t Work Items: %d \n", global_size);
+    printf("\t Local size: %d", local_size)
     printf("\t Number of terms: %d \n", n_terms);
     printf("\t Result: %f \n", pi);
 

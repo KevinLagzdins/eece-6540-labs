@@ -17,7 +17,6 @@ __kernel void calculate_pi(
       
       float term_1 = (float)1/((work_item_index*8.0)+i);
       float term_2 = (float)1/((work_item_index*8.0)+i+2);
-      printf("Work Item #%d: term 1:%f, term2:%f",work_item_index,term_1,term_2);
       
       local_result[work_item_index] += (term_1 - term_2);
    } 
