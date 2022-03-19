@@ -19,7 +19,7 @@ void cleanup();
 // Global Definitions
 #define LOCAL_SIZE 1
 #define WG_SIZE 16
-#define NUMBER_TERMS 8
+#define NUMBER_TERMS 256
 
 int main()
 {
@@ -144,8 +144,6 @@ int main()
       exit(1);
     }
 
-    global_results = (float*) malloc(sizeof(float) * global_size);
-
     /* Create buffer to hold intermediate results */
     cl_mem global_buffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
            global_size*sizeof(float), NULL, &ret);
@@ -174,6 +172,9 @@ int main()
        exit(1);
     }
 
+    /* Global results array used to store intermediate results */
+    global_results = (float*) malloc(sizeof(float) * global_size);
+
     /* Read and print the result */
     ret = clEnqueueReadBuffer(command_queue, global_buffer, CL_TRUE, 0,
        global_size * sizeof(float), (void *)global_results, 0, NULL, NULL);
@@ -193,7 +194,7 @@ int main()
     /* Debug Information */
     printf("Performing pi calculation: \n");
     printf("\t Work Items: %d \n", global_size);
-    printf("\t Local size: %d", local_size);
+    printf("\t Local size: %d \n", local_size);
     printf("\t Number of terms: %d \n", n_terms);
     printf("\t Result: %f \n", pi);
 
