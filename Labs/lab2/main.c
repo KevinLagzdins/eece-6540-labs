@@ -188,7 +188,11 @@ int main()
     }
     pi *= 4;
 
-    printf("\nResult: %f \n",pi);
+    /* Debug Information */
+    printf("Performing pi calculation: \n");
+    printf("\t Work Items: %d \n", local_size);
+    printf("\t Number of terms: %d \n", n_terms);
+    printf("\t Result: %f \n", pi);
 
     /* free resources */
     free(global_results);
