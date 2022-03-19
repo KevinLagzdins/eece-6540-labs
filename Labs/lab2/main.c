@@ -193,7 +193,7 @@ int main()
     /* Debug Information */
     printf("Performing pi calculation: \n");
     printf("\t Work Items: %d \n", global_size);
-    printf("\t Local size: %d", local_size)
+    printf("\t Local size: %d", local_size);
     printf("\t Number of terms: %d \n", n_terms);
     printf("\t Result: %f \n", pi);
 
