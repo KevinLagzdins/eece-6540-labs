@@ -23,7 +23,8 @@ __kernel void calculate_pi(
 
    /* Make sure previous processing has completed */
    barrier(CLK_LOCAL_MEM_FENCE);
-
+   
+   printf("Work item %d value: %f", work_item_index, local_result[work_item_index]);
    global_result[work_item_index] = local_result[work_item_index];
 
    return;
