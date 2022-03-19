@@ -12,11 +12,14 @@ __kernel void calculate_pi(
    /* Make sure previous processing has completed */
    barrier(CLK_LOCAL_MEM_FENCE);
 
+   // Scale factor calculation
+   int SF = work_item_index*num_terms*2; 
+
    /* Perform work item calculation */
    for(int i = 1; i < num_terms*2; i+=4){
       
-      float term_1 = (float)1/((work_item_index*8.0)+i);
-      float term_2 = (float)1/((work_item_index*8.0)+i+2);
+      float term_1 = (float)1/((SF)+i);
+      float term_2 = (float)1/((SF)+i+2);
       
       local_result[work_item_index] += (term_1 - term_2);
    } 
