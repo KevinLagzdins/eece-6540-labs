@@ -16,11 +16,8 @@ using namespace aocl_utils;
 void cleanup();
 #endif
 
-#define MAX_SOURCE_SIZE (0x100000)
-#define DEVICE_NAME_LEN 128
-static char dev_name[DEVICE_NAME_LEN];
+// Global Definitions
 
-#define TEXT_FILE "kafka.txt"
 
 int main()
 {
@@ -38,18 +35,12 @@ int main()
     size_t global_size;
     size_t local_size;
 
-
     FILE *fp;
     char fileName[] = "./mykernel.cl";
     char *source_str;
     size_t source_size;
 
-    int result[4] = {0, 0, 0, 0};
-    char pattern[16] = {'t','h','a','t','w','i','t','h','h','a','v','e','f','r','o','m'};
-    FILE *text_handle;
-    char *text;
-    size_t text_size;
-    int chars_per_item;
+    float *global_results;
 
 #ifdef __APPLE__
     /* Get Platform and Device Info */
@@ -94,7 +85,7 @@ int main()
               sizeof(local_size), &local_size, NULL);
 #endif
 #ifdef AOCL  /* local size reported Altera FPGA is incorrect */
-    local_size = 16;
+    local_size = 8;
 #endif
     printf("local_size=%lu\n", local_size);
     global_size = num_comp_units * local_size;
@@ -145,43 +136,28 @@ int main()
     }
 
     /* Create OpenCL Kernel */
-    kernel = clCreateKernel(program, "string_search", &ret);
+    kernel = clCreateKernel(program, "calculate_pi", &ret);
     if (ret != CL_SUCCESS) {
       printf("Failed to create kernel.\n");
       exit(1);
     }
 
-    /* Read text file and place content into buffer */
-    text_handle = fopen(TEXT_FILE, "r");
-    if(text_handle == NULL) {
-       perror("Couldn't find the text file");
-       exit(1);
-    }
-    fseek(text_handle, 0, SEEK_END);
-    text_size = ftell(text_handle)-1;
-    rewind(text_handle);
-    text = (char*)calloc(text_size, sizeof(char));
-    fread(text, sizeof(char), text_size, text_handle);
-    fclose(text_handle);
-    chars_per_item = text_size / global_size + 1;
+    global_results = (float*) malloc(sizeof(float) * global_size);
 
-    /* Create buffers to hold the text characters and count */
-    cl_mem text_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY |
-          CL_MEM_COPY_HOST_PTR, text_size, text, &ret);
+    /* Create buffer to hold intermediate results */
+    cl_mem global_buffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
+           global_size*sizeof(float), NULL, &ret);
     if(ret < 0) {
        perror("Couldn't create a buffer");
        exit(1);
     };
-    cl_mem result_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE |
-          CL_MEM_COPY_HOST_PTR, sizeof(result), result, NULL);
 
     ret = 0;
     /* Create kernel argument */
-    ret = clSetKernelArg(kernel, 0, sizeof(pattern), pattern);
-    ret |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &text_buffer);
-    ret |= clSetKernelArg(kernel, 2, sizeof(chars_per_item), &chars_per_item);
-    ret |= clSetKernelArg(kernel, 3, 4 * sizeof(int), NULL);
-    ret |= clSetKernelArg(kernel, 4, sizeof(cl_mem), &result_buffer);
+    int n_terms = 4;
+    ret = clSetKernelArg(kernel, 0, sizeof(int), &n_terms);
+    ret |= clSetKernelArg(kernel, 1, local_size * sizeof(float), NULL);
+    ret |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &global_buffer);
     if(ret < 0) {
        printf("Couldn't set a kernel argument");
        exit(1);
@@ -197,25 +173,27 @@ int main()
     }
 
     /* Read and print the result */
-    ret = clEnqueueReadBuffer(command_queue, result_buffer, CL_TRUE, 0,
-       sizeof(result), &result, 0, NULL, NULL);
+    ret = clEnqueueReadBuffer(command_queue, global_buffer, CL_TRUE, 0,
+       global_size * sizeof(float), (void *)global_results, 0, NULL, NULL);
     if(ret < 0) {
        perror("Couldn't read the buffer");
        exit(1);
     }
 
-    printf("\nResults: \n");
-    printf("Number of occurrences of 'that': %d\n", result[0]);
-    printf("Number of occurrences of 'with': %d\n", result[1]);
-    printf("Number of occurrences of 'have': %d\n", result[2]);
-    printf("Number of occurrences of 'from': %d\n", result[3]);
+    /* perform global reduction */
+    float pi = 0;
+    for(int i = 0; i < local_size; i++)
+    {
+      pi += global_results[i];
+    }
+    pi *= 4;
 
+    printf("\nResult: %f \n",pi);
 
     /* free resources */
-    free(text);
+    free(global_results);
 
-    clReleaseMemObject(text_buffer);
-    clReleaseMemObject(result_buffer);
+    clReleaseMemObject(global_buffer);
     clReleaseCommandQueue(command_queue);
     clReleaseKernel(kernel);
     clReleaseProgram(program);
