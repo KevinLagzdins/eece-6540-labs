@@ -88,7 +88,7 @@ int main()
     local_size = 8;
 #endif
     printf("local_size=%lu\n", local_size);
-    global_size = num_comp_units * local_size;
+    global_size = local_size;
     printf("global_size=%lu, local_size=%lu\n", global_size, local_size);
 
     /* Create OpenCL context */
