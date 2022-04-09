@@ -1,9 +1,9 @@
-set(SOURCE_FILE image-conv.cpp)
-set(TARGET_NAME image-conv)
+set(SOURCE_FILE image-rotation.cpp)
+set(TARGET_NAME image-rot)
 set(EMULATOR_TARGET ${TARGET_NAME}.fpga_emu)
 set(FPGA_TARGET ${TARGET_NAME}.fpga)
 set(FPGA_PROFILE_TARGET ${TARGET_NAME}.fpga_profile)
-set(SOURCE_FILE_IMAGE image-conv-image.cpp)
+set(SOURCE_FILE_IMAGE image-rotation.cpp)
 
 # FPGA board selection
 set(A10_PAC_BOARD_NAME "intel_a10gx_pac:pac_a10")

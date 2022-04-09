@@ -39,35 +39,6 @@ static const char *inputImagePath = "./Images/cat.bmp";
 #define DEVICE_NAME_LEN 128
 static char dev_name[DEVICE_NAME_LEN];
 
-#if 1
-class IntMatrix
-{
-public:
-  size_t row, column;
-  std::vector<int> elements;
-
-  IntMatrix(size_t r, size_t c, int initVal)
-  {
-    row = r;
-    column = c;
-    elements = std::vector<int>(r * c, initVal);
-  }
-  int e(size_t r, size_t c)
-  {
-    return elements[r * column + c];
-  }
-};
-// matrice shapes for this example.
-constexpr size_t a_rows = 200;
-constexpr size_t a_columns = 400;
-constexpr size_t b_columns = 600;
-
-// matrix A size: a_rows x a_columns
-// matrix B size: a_columns x b_columns
-// matrices C an D size: a_rows x b_columns
-
-#endif
-
 float4 *pixel2rgba(float *image_in, size_t ImageRows, size_t ImageCols, image_channel_order chan_order)
 {
   // allocate spaces
@@ -99,7 +70,7 @@ void ImageConv(queue &q, void *image_in, void *image_out,
   // use "r" as channel order which replicates the value in all R component
   // in the image object
   // The channel type is set as fp32
-  //
+
   image<2> srcImage(image_in, image_channel_order::r, image_channel_type::fp32,
                     range<2>(ImageCols, ImageRows));
 
@@ -111,8 +82,7 @@ void ImageConv(queue &q, void *image_in, void *image_out,
 
   // Submit a command group to the queue by a lambda function that contains the
   // data access permission and device computation (kernel).
-  q.submit([&](handler &h)
-           {
+  q.submit([&](handler &h){
       // Create an accessor to image with access permission: read, write or
       // read/write. The accessor is a way to access the memory in the image.
       // When accessing images, the accessor element type is used to specify 
@@ -150,34 +120,36 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         int source_x = item[0];
         int source_y = item[1];
 
+        // DPC++ Coordinate objects used to store input and output image coordinates
         int2 source_coords;
         int2 destination_coords;
 
+        // Set source coordinates
         source_coords[0] = source_x;
         source_coords[1] = source_y;
 
-        float4 sum = {0.0f, 0.0f, 0.0f, 0.0f};
+        // Output pixel array initialization
+        float4 out = {0.0f, 0.0f, 0.0f, 0.0f};
 
-        // Source pixel
+        // Get source pixel to be rotated
         float4 pixel = srcPtr.read(source_coords, mysampler);
-        sum[0] = pixel[0];
+        out[0] = pixel[0];
 
+        // Calculate new location of source pixel
         float destination_x = cos(theta)*source_x - sin(theta)*source_y;
         float destination_y = sin(theta)*source_x + cos(theta)*source_y;
 
-        /* calculate location of data to move int (x, y)
-        * output decomposition as mentioned */
-        // float destination_x = ((float)source_x)*cosTheta + ((float)source_y)*sinTheta;
-        // float destination_y = -1.0f*((float)source_x)*sinTheta + ((float)source_y)*cosTheta;
-
+        // Convert new location from float to int and put into DPC++ Coordinate object
         destination_coords[0] = int(destination_x);
         destination_coords[1] = int(destination_y);
 
         // Range checking
         if (destination_coords[0] >= 0 && destination_coords[0] < ImageCols &&
             destination_coords[1] >= 0 && destination_coords[1] < ImageRows){
-              printf("Pixel %d, %d, (%d) rotated to %d, %d \n", source_x, source_y, sum[0], destination_coords[0], destination_coords[1]);
-              dstPtr.write(destination_coords, sum);
+              // debug lines
+              printf("Pixel %d, %d, (%d) rotated to %d, %d \n", source_x, source_y, out[0], destination_coords[0], destination_coords[1]);
+              // Write source pixel to new destination
+              dstPtr.write(destination_coords, out);
           }
       }
     ); });
