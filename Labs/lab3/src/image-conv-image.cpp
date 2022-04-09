@@ -145,13 +145,13 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         int2 source_coords;
         int2 destination_coords;
 
-        coords[0] = column;
-        coords[1] = row;
+        source_coords[0] = column;
+        source_coords[1] = row;
 
         float4 sum = {0.0f, 0.0f, 0.0f, 0.0f};
 
         // Source pixel
-        float4 pixel = srcPtr.read(coords, mysampler);
+        float4 pixel = srcPtr.read(source_coords, mysampler);
         sum[0] = pixel[0];
 
         /* calculate location of data to move int (row, column)
