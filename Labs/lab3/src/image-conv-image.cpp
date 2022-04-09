@@ -134,8 +134,12 @@ void ImageConv(queue &q, void *image_in, void *image_out,
                     addressing_mode::clamp, filtering_mode::nearest);
 
       /* Theta = 315 degrees */
-      float sinTheta = -0.70710678118;
-      float cosTheta = 0.70710678118;
+      // float sinTheta = -0.70710678118;
+      // float cosTheta = 0.70710678118;
+
+      /* Theta = 90 degrees */ 
+      float sinTheta = 1.0;
+      float cosTheta = 0.0;
       // Use parallel_for to run image convolution in parallel on device. This
       // executes the kernel.
       //    1st parameter is the number of work items.
@@ -168,9 +172,6 @@ void ImageConv(queue &q, void *image_in, void *image_out,
 
         destination_coords[0] = (int)destination_x;
         destination_coords[1] = (int)destination_y;
-
-       // Debug information
-       printf("Rotating Pixel: %d, %d (%d) to new position %d, %d \n",source_x,source_y,sum[0],destination_coords[0],destination_coords[1]);
 
         // Range checking
         if (destination_coords[0] >= 0 && destination_coords[0] < ImageCols &&
