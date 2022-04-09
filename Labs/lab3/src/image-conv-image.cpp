@@ -2,6 +2,7 @@
 
 #include <CL/sycl.hpp>
 #include <array>
+#include <math.h>
 #include <iostream>
 #include "dpc_common.hpp"
 #if FPGA || FPGA_EMULATOR
@@ -134,12 +135,11 @@ void ImageConv(queue &q, void *image_in, void *image_out,
                     addressing_mode::clamp, filtering_mode::nearest);
 
       /* Theta = 315 degrees */
-      float sinTheta = -0.70710678118;
-      float cosTheta = 0.70710678118;
+      // float sinTheta = -0.70710678118;
+      // float cosTheta = 0.70710678118;
 
-      /* Theta = 120 degrees */ 
-      // float sinTheta =  0.8660254038;
-      // float cosTheta = -0.5;
+      float theta = 180.0;
+
       // Use parallel_for to run image convolution in parallel on device. This
       // executes the kernel.
       //    1st parameter is the number of work items.
@@ -165,10 +165,13 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         float4 pixel = srcPtr.read(source_coords, mysampler);
         sum[0] = pixel[0];
 
+        float destination_x = cos(theta)*source_x - sin(theta)*source_y;
+        float destination_y = sin(theta)*source_x + cos(theta)*source_y
+
         /* calculate location of data to move int (x, y)
         * output decomposition as mentioned */
-        float destination_x = ((float)source_x)*cosTheta + ((float)source_y)*sinTheta;
-        float destination_y = -1.0f*((float)source_x)*sinTheta + ((float)source_y)*cosTheta;
+        // float destination_x = ((float)source_x)*cosTheta + ((float)source_y)*sinTheta;
+        // float destination_y = -1.0f*((float)source_x)*sinTheta + ((float)source_y)*cosTheta;
 
         destination_coords[0] = int(destination_x);
         destination_coords[1] = int(destination_y);
