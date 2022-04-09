@@ -146,14 +146,14 @@ void ImageConv(queue &q, void *image_in, void *image_out,
       { 
 
         // get row and col of the pixel assigned to this work item
-        int column = item[0];
-        int row = item[1];
+        int source_x = item[0];
+        int source_y = item[1];
 
         int2 source_coords;
         int2 destination_coords;
 
-        source_coords[0] = column;
-        source_coords[1] = row;
+        source_coords[0] = source_x;
+        source_coords[1] = source_y;
 
         float4 sum = {0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -161,16 +161,16 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         float4 pixel = srcPtr.read(source_coords, mysampler);
         sum[0] = pixel[0];
 
-        /* calculate location of data to move int (row, column)
+        /* calculate location of data to move int (x, y)
         * output decomposition as mentioned */
-        float new_column = ((float)row)*cosTheta + ((float)column)*sinTheta;
-        float new_row = -1.0f*((float)row)*sinTheta + ((float)column)*cosTheta;
+        float destination_x = ((float)source_x)*cosTheta + ((float)source_y)*sinTheta;
+        float destination_y = -1.0f*((float)source_x)*sinTheta + ((float)source_y)*cosTheta;
 
-        destination_coords[0] = (int)new_column;
-        destination_coords[1] = (int)new_row;
+        destination_coords[0] = (int)destination_x;
+        destination_coords[1] = (int)destination_y;
 
        // Debug information
-       printf("Rotating Pixel: %d, %d (%d) to new position %d, %d",row,column,sum[0],destination_coords[0],destination_coords[1]);
+       printf("Rotating Pixel: %d, %d (%d) to new position %d, %d \n",source_x,source_y,sum[0],destination_coords[0],destination_coords[1]);
 
         // Range checking
         if (destination_coords[0] >= 0 && destination_coords[0] < ImageCols &&
