@@ -125,6 +125,9 @@ void ImageConv(queue &q, void *image_in, void *image_out,
       sampler mysampler(coordinate_normalization_mode::unnormalized,
                     addressing_mode::clamp, filtering_mode::nearest);
 
+      /* Theta = 315 degrees */
+      float sinTheta = -0.70710678118;
+      float cosTheta = 0.70710678118;
 
       // Use parallel_for to run image convolution in parallel on device. This
       // executes the kernel.
@@ -139,18 +142,24 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         int column = item[0];
         int row = item[1];
 
-        int2 coords;
+        int2 source_coords;
+        int2 destination_coords;
+
         coords[0] = column;
         coords[1] = row;
 
         float4 sum = {0.0f, 0.0f, 0.0f, 0.0f};
 
+        // Source pixel
         float4 pixel = srcPtr.read(coords, mysampler);
-
-        // store the new pixel
         sum[0] = pixel[0];
+
+        /* calculate location of data to move int (row, column)
+        * output decomposition as mentioned */
+        destination_coords[0] = (int)((float)row)*cosTheta + ((float)column)*sinTheta;
+        destination_coords[1] = (int)(-1.0f*((float)row)*sinTheta + ((float)column)*cosTheta);
       
-        dstPtr.write(coords, sum);
+        dstPtr.write(destination_coords, sum);
       }
     );
   });
