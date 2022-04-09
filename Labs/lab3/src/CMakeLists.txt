@@ -1,5 +1,5 @@
 set(SOURCE_FILE image-rotation.cpp)
-set(TARGET_NAME image-rotation)
+set(TARGET_NAME image-rot)
 set(EMULATOR_TARGET ${TARGET_NAME}.fpga_emu)
 set(FPGA_TARGET ${TARGET_NAME}.fpga)
 set(FPGA_PROFILE_TARGET ${TARGET_NAME}.fpga_profile)
