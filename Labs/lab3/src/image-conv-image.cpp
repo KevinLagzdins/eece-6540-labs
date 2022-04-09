@@ -137,9 +137,9 @@ void ImageConv(queue &q, void *image_in, void *image_out,
       // float sinTheta = -0.70710678118;
       // float cosTheta = 0.70710678118;
 
-      /* Theta = 90 degrees */ 
-      float sinTheta = 1.0;
-      float cosTheta = 0.0;
+      /* Theta = 120 degrees */ 
+      float sinTheta =  0.8660254038;
+      float cosTheta = -0.5;
       // Use parallel_for to run image convolution in parallel on device. This
       // executes the kernel.
       //    1st parameter is the number of work items.
