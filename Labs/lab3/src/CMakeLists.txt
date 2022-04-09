@@ -55,6 +55,13 @@ if(WIN32)
     add_custom_command(OUTPUT ${WIN_EMULATOR_TARGET} 
                        COMMAND ${CMAKE_CXX_COMPILER} /EHsc ${WIN_EMULATOR_COMPILE_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_FILE} -o ${CMAKE_BINARY_DIR}/${WIN_EMULATOR_TARGET}
                        DEPENDS ${SOURCE_FILE})
+else()
+    add_executable(${TARGET_NAME} ${SOURCE_FILE_IMAGE})
+    add_custom_target(nofpga DEPENDS ${TARGET_NAME})
+    #set_target_properties(${EMULATOR_TARGET} PROPERTIES COMPILE_FLAGS ${EMULATOR_COMPILE_FLAGS})
+    #set_target_properties(${EMULATOR_TARGET} PROPERTIES LINK_FLAGS ${EMULATOR_LINK_FLAGS})
+    # to link with functions in Utils library (definded in Utils/ folder)
+    target_link_libraries (${TARGET_NAME} LINK_PUBLIC Utils)
 endif()
 
 # FPGA hardware
@@ -120,3 +127,4 @@ else()
     # to link with functions in Utils library (definded in Utils/ folder)
     target_link_libraries (${FPGA_PROFILE_TARGET} LINK_PUBLIC Utils)
 endif()
+
