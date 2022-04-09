@@ -143,10 +143,12 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         coords[0] = column;
         coords[1] = row;
 
+        float4 sum = {0.0f, 0.0f, 0.0f, 0.0f};
+
         float4 pixel = srcPtr.read(coords, mysampler);
 
         // store the new pixel
-        float4 sum = pixel;
+        sum[0] = pixel[0];
       
         dstPtr.write(coords, sum);
       }
