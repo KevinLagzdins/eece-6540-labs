@@ -163,7 +163,7 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         sum[0] = pixel[0];
 
         float destination_x = cos(theta)*source_x - sin(theta)*source_y;
-        float destination_y = sin(theta)*source_x + cos(theta)*source_y
+        float destination_y = sin(theta)*source_x + cos(theta)*source_y;
 
         /* calculate location of data to move int (x, y)
         * output decomposition as mentioned */
