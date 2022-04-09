@@ -87,7 +87,7 @@ float4 *pixel2rgba(float *image_in, size_t ImageRows, size_t ImageCols, image_ch
 //************************************
 // Image Rotation in DPC++ on device:
 //************************************
-void ImageConv(queue &q, void *image_in, void *image_out,
+void ImageRotation(queue &q, void *image_in, void *image_out,
                size_t ImageRows, size_t ImageCols)
 {
   // We create images for the input and output data.
@@ -150,26 +150,26 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         int source_x = item[0];
         int source_y = item[1];
 
+        // DPC++ Coordinate objects for source and desintation locations
         int2 source_coords;
         int2 destination_coords;
 
+        // Set source coordinates 
         source_coords[0] = source_x;
         source_coords[1] = source_y;
 
+        // Initalize output pixel
         float4 sum = {0.0f, 0.0f, 0.0f, 0.0f};
 
-        // Source pixel
+        // Get source pixel and assign value to sum
         float4 pixel = srcPtr.read(source_coords, mysampler);
         sum[0] = pixel[0];
 
+        // Calculate new position of pixel
         float destination_x = cos(theta)*source_x - sin(theta)*source_y;
         float destination_y = sin(theta)*source_x + cos(theta)*source_y;
 
-        /* calculate location of data to move int (x, y)
-        * output decomposition as mentioned */
-        // float destination_x = ((float)source_x)*cosTheta + ((float)source_y)*sinTheta;
-        // float destination_y = -1.0f*((float)source_x)*sinTheta + ((float)source_y)*cosTheta;
-
+        // Set destination coordinates 
         destination_coords[0] = int(destination_x);
         destination_coords[1] = int(destination_y);
 
@@ -224,7 +224,8 @@ int main()
               << q.get_device().get_info<info::device::name>() << "\n";
 
     // Image Rotation in DPC++
-    ImageConv(q, hInputImage, hOutputImage, imageRows, imageCols);
+    ImageRotation
+  (q, hInputImage, hOutputImage, imageRows, imageCols);
   }
   catch (exception const &e)
   {
