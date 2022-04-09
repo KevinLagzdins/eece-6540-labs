@@ -146,7 +146,7 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         float4 pixel = srcPtr.read(coords, mysampler);
 
         // store the new pixel
-        float4 sum = pixel
+        float4 sum = pixel;
       
         dstPtr.write(coords, sum);
       }
@@ -180,7 +180,6 @@ int main() {
   /* Read in the BMP image */
   hInputImage = readBmpFloat(inputImagePath, &imageRows, &imageCols);
   printf("imageRows=%d, imageCols=%d\n", imageRows, imageCols);
-  printf("filterWidth=%d, \n", filterWidth);
   /* Allocate space for the output image */
   hOutputImage = (float *)malloc( imageRows*imageCols * sizeof(float) );
   for(i=0; i<imageRows*imageCols; i++)
