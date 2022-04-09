@@ -134,11 +134,8 @@ void ImageConv(queue &q, void *image_in, void *image_out,
       sampler mysampler(coordinate_normalization_mode::unnormalized,
                     addressing_mode::clamp, filtering_mode::nearest);
 
-      /* Theta = 315 degrees */
-      // float sinTheta = -0.70710678118;
-      // float cosTheta = 0.70710678118;
-
-      float theta = 180.0;
+      // angle to rotate image by
+      float theta = 315.0;
 
       // Use parallel_for to run image convolution in parallel on device. This
       // executes the kernel.
