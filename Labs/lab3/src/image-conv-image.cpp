@@ -176,7 +176,7 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         // Range checking
         if (destination_coords[0] >= 0 && destination_coords[0] < ImageCols &&
             destination_coords[1] >= 0 && destination_coords[1] < ImageRows){
-              printf("Pixel %d, %d, (%d) rotated to %d, %d", source_x, source_y, row[0], destination_coords[0], destination_coords[1])
+              printf("Pixel %d, %d, (%d) rotated to %d, %d", source_x, source_y, sum[0], destination_coords[0], destination_coords[1]);
               dstPtr.write(destination_coords, sum);
           }
       }
