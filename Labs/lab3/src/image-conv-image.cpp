@@ -185,7 +185,7 @@ int main() {
   /* Allocate space for the output image */
   hOutputImage = (float *)malloc( imageRows*imageCols * sizeof(float) );
   for(i=0; i<imageRows*imageCols; i++)
-    hOutputImage[i] = 1234.0;
+    hOutputImage[i] = 0.0;
 
 
   Timer t;
