@@ -163,11 +163,14 @@ void ImageConv(queue &q, void *image_in, void *image_out,
 
         /* calculate location of data to move int (row, column)
         * output decomposition as mentioned */
-        destination_coords[0] = (int)((float)row)*cosTheta + ((float)column)*sinTheta;
-        destination_coords[1] = (int)(-1.0f*((float)row)*sinTheta + ((float)column)*cosTheta);
+        float new_column = ((float)row)*cosTheta + ((float)column)*sinTheta;
+        float new_row = -1.0f*((float)row)*sinTheta + ((float)column)*cosTheta;
+
+        destination_coords[0] = (int)new_column;
+        destination_coords[1] = (int)new_row;
 
        // Debug information
-       printf("Rotating Pixel: %d, %d (%d) to new position %d, %d",row,column,sum[0],destination_coords[0],destination_coords[1])
+       printf("Rotating Pixel: %d, %d (%d) to new position %d, %d",row,column,sum[0],destination_coords[0],destination_coords[1]);
 
         // Range checking
         if (destination_coords[0] >= 0 && destination_coords[0] < ImageCols &&
