@@ -170,8 +170,8 @@ void ImageConv(queue &q, void *image_in, void *image_out,
         float destination_x = ((float)source_x)*cosTheta + ((float)source_y)*sinTheta;
         float destination_y = -1.0f*((float)source_x)*sinTheta + ((float)source_y)*cosTheta;
 
-        destination_coords[0] = (int)destination_x;
-        destination_coords[1] = (int)destination_y;
+        destination_coords[0] = int(destination_x);
+        destination_coords[1] = int(destination_y);
 
         // Range checking
         if (destination_coords[0] >= 0 && destination_coords[0] < ImageCols &&
